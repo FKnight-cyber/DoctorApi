@@ -45,6 +45,21 @@ export class DoctorService{
    return await this.doctorRepository.find();
   }
 
+  async getDoctorById(id: number) {
+
+    try {
+      return await this.doctorRepository.findBy({id});
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: "There's no doctor registered with this id!",
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    }
+
+  }
+
   delete() {
     
   }

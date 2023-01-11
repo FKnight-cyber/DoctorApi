@@ -23,6 +23,11 @@ export class DoctorController {
     return this.doctorService.getAllDoctors();
   }
 
+  @Get('/:id')
+  findDoctorById(@Param('id') id: number){
+    return this.doctorService.getDoctorById(id);
+  }
+
   @Delete('remove')
   delete(){
     return 'delete route';
