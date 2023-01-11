@@ -41,8 +41,8 @@ export class DoctorService{
     
   }
 
-  select() {
-   return this.doctorRepository.find();
+  async getAllDoctors() {
+   return await this.doctorRepository.find();
   }
 
   delete() {

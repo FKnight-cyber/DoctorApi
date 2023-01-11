@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { DoctorService } from "./doctor.service";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
 import { CreateDoctorValidatorPipe } from "./validation.pipe";
@@ -19,8 +19,8 @@ export class DoctorController {
   }
 
   @Get()
-  select(){
-    return 'select route';
+  findAllDoctors(){
+    return this.doctorService.getAllDoctors();
   }
 
   @Delete('remove')
