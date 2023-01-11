@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  gcb-db:
+    image: postgres:13
+    ports:
+     - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: gcb
+    networks:
+      - challengedb
+networks:
+  challengedb:
