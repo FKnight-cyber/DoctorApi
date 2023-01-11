@@ -1,3 +1,5 @@
+import { Specialty } from "../../specialties/specialty.entity";
+
 export class CreateDoctorDto {
   public name: string;
   public crm: string;

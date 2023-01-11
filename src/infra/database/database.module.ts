@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Doctor } from 'src/application/entities/doctor/doctor.entity';
+import { Specialty } from 'src/application/entities/specialties/specialty.entity';
 
 @Module({
   imports:[
@@ -11,8 +12,8 @@ import { Doctor } from 'src/application/entities/doctor/doctor.entity';
       username: 'postgres',
       password: '1234',
       database: process.env.POSTGRES_DB,
-      entities:[Doctor],
-      synchronize:true
+      entities:[Doctor, Specialty],
+      synchronize:true,
     })
   ]
 })

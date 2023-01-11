@@ -1,16 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { SpecialtyService } from "../specialties/specialty.service";
 import { DoctorService } from "./doctor.service";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
 import { CreateDoctorValidatorPipe } from "./validation.pipe";
 
 @Controller('doctors')
 export class DoctorController {
-  constructor(private doctorService: DoctorService){}
+  constructor(private doctorService: DoctorService, private specialtyService: SpecialtyService){}
 
   @Post('add')
-  insert(@Body(new CreateDoctorValidatorPipe) CreateDoctorDto: CreateDoctorDto) {
+  async insert(@Body(new CreateDoctorValidatorPipe) CreateDoctorDto: CreateDoctorDto) {
     
-    return this.doctorService.insert(CreateDoctorDto);
+    const doctor = await this.doctorService.insert(CreateDoctorDto);
+    
+    await this.specialtyService.addDoctorToSpecialties(doctor.id, doctor.specialties);
+
+    return "Doctor sucessfully registered!"
   }
 
   @Patch('update')
@@ -19,7 +24,17 @@ export class DoctorController {
   }
 
   @Get()
-  findAllDoctors(){
+  findAllDoctors(@Query() query: {
+    name:string, 
+    crm:number, 
+    telefoneFixo:number, 
+    telefoneCelular:number,
+    cep:number,
+    specialties: number[]
+  }){
+    if(query) {
+      return this.doctorService.getDoctorByFilters(query);
+    }
     return this.doctorService.getAllDoctors();
   }
 

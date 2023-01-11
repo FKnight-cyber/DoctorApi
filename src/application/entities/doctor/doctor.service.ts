@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestj
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
 import { Repository } from "typeorm";
+import { Specialty } from "../specialties/specialty.entity";
 import { Doctor } from "./doctor.entity";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
 
@@ -17,7 +18,7 @@ export class DoctorService{
     }
 
     try {
-      await this.doctorRepository.save({
+      const doctor = await this.doctorRepository.save({
         name: CreateDoctorDto.name,
         crm: parseInt(CreateDoctorDto.crm),
         telefoneFixo: parseInt(CreateDoctorDto.telefoneFixo),
@@ -25,6 +26,9 @@ export class DoctorService{
         cep: parseInt(CreateDoctorDto.cep),
         specialties: CreateDoctorDto.specialties
       });
+
+      return doctor;
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.UNAUTHORIZED,
@@ -33,8 +37,6 @@ export class DoctorService{
         cause: error
       });
     }
-    
-    return "Doctor successfully registered!";
   }
 
   update() {
@@ -60,7 +62,26 @@ export class DoctorService{
 
   }
 
+  async getDoctorByFilters(query: any) {
+    if(query.cep) {
+      const doctor = this.doctorRepository.findBy({cep:query.cep});
+    }
+    return this.doctorRepository.findBy(query);
+  }
+
+  async getDoctorByCrm(crm: number) {
+    return this.doctorRepository.findBy({crm});
+  }
+
   delete() {
     
   }
+}
+
+function fixQueryArray(numbers: string) {
+  const arr:any = numbers.split(',')
+  for(let i = 0; i < arr.length; i++) {
+    arr[i] = parseInt(arr[i]);
+  }
+  return arr;
 }

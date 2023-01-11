@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Specialty } from '../specialties/specialty.entity';
 
 @Entity()
 export class Doctor {
@@ -20,6 +21,6 @@ export class Doctor {
   @Column({type: 'bigint'})
   cep: number;
 
-  @Column("int", { array: true}, )
+  @Column("int", { array: true})
   specialties: number[];
 }

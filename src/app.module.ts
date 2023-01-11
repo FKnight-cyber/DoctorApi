@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { doctorModule } from './application/entities/doctor/doctor.module';
-import { SpecialtiesModule } from './application/entities/specialties/specialties.module';
+import { specialtyModule } from './application/entities/specialties/specialties.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { ConfigModule } from '@nestjs/config';
 
@@ -9,7 +9,8 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(),
     doctorModule, 
-    SpecialtiesModule, DatabaseModule,
+    specialtyModule, 
+    DatabaseModule,
   ],
 })
 export class AppModule {}
