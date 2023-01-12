@@ -73,6 +73,11 @@ export class DoctorService{
     return await getSpecialtiesNames(doctors, service);
   }
 
+  async getInactiveDoctors(service: SpecialtyService) {
+    const doctors = await this.doctorRepository.find({where:{isDeleted:true}});
+    return await getSpecialtiesNames(doctors, service);
+  }
+
   async getDoctorById(id: number, service:SpecialtyService) {
 
     try {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { SpecialtyService } from "../specialties/specialty.service";
 import { DoctorService } from "./doctor.service";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
@@ -38,7 +38,7 @@ export class DoctorController {
   }
 
   @Get()
-  findAllDoctors(@Query() query: {
+  async findAllDoctors(@Query() query: {
     name:string, 
     crm:number, 
     telefoneFixo:number, 
@@ -49,20 +49,21 @@ export class DoctorController {
     const service = this.specialtyService;
 
     if(Object.keys(query).length !== 0) {
-      return this.doctorService.getDoctorByFilters(query, service);
+      return await this.doctorService.getDoctorByFilters(query, service);
     }
 
-    return this.doctorService.getAllDoctors(service);
+    return await this.doctorService.getAllDoctors(service);
+  }
+
+  @Get('deleted')
+  async findAllDeletedDoctors() {
+    const service = this.specialtyService;
+    return await this.doctorService.getInactiveDoctors(service);
   }
 
   @Get('/:id')
-  findDoctorById(@Param('id') id: number){
+  async findDoctorById(@Param('id') id: number){
     const service = this.specialtyService;
-    return this.doctorService.getDoctorById(id, service);
-  }
-
-  @Delete('remove')
-  delete(){
-    return 'delete route';
+    return await this.doctorService.getDoctorById(id, service);
   }
 }
