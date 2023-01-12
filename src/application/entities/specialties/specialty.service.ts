@@ -70,7 +70,7 @@ export class SpecialtyService{
 
     for(const specialty of specialties) {
       try {
-        this.specialtyRepository.save(specialty);
+        await this.specialtyRepository.save(specialty);
       } catch (error) {
         throw new HttpException({
           status: HttpStatus.FORBIDDEN,

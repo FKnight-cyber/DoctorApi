@@ -11,8 +11,8 @@ export class SpecialtyController {
   }
 
   @Post('seed')
-  seedDB() {
-    this.specialtyService.seed();
+  async seedDB() {
+    await this.specialtyService.seed();
 
     return "Specialties added!";
   }

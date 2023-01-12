@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Doctor } from '../doctor/doctor.entity';
 
 @Entity()
 export class Specialty {
