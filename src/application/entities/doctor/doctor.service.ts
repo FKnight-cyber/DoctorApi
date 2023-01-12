@@ -119,6 +119,12 @@ export class DoctorService{
     doctor.isDeleted = true;
     await this.doctorRepository.update(id,doctor);
   }
+
+  async enableDoctor(id:number) {
+    const doctor = await this.doctorRepository.findOne({where:{id}});
+    doctor.isDeleted = false;
+    await this.doctorRepository.update(id,doctor);
+  }
 }
 
 function fixQueryArray(numbers: string) {

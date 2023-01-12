@@ -31,6 +31,12 @@ export class DoctorController {
     return "Doctor deactivated from system!";
   }
 
+  @Patch('activate/:id')
+  async activateDoctor(@Param('id') id: number) {
+    await this.doctorService.enableDoctor(Number(id));
+    return "Doctor active!";
+  }
+
   @Get()
   findAllDoctors(@Query() query: {
     name:string, 
