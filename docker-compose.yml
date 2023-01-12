@@ -1,14 +1,31 @@
 version: '3.7'
 services:
   gcb-db:
-    image: postgres:13
-    ports:
-     - 5432:5432
+    image: postgres
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: gcb
-    networks:
-      - challengedb
-networks:
-  challengedb:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - docker-nest-postgres:/var/lib/postgresql/data
+      
+  gcb-api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+    - .env
+    command: npm run start:dev
+    ports:
+      - 5000:5000
+    depends_on:
+      - gcb-db
+
+volumes:
+  docker-nest-postgres:
