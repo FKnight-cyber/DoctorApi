@@ -20,7 +20,7 @@ export class SpecialtyService{
 
     for(const specialty of allSpecialties) {
       if(!specialties.includes(Number(specialty.id)) && specialty.doctors.includes(Number(doctorId))) {
-        console.log(specialty.id)
+        
         const index = specialty.doctors.indexOf(Number(doctorId));
       
         specialty.doctors.splice(index, 1);
@@ -53,6 +53,7 @@ export class SpecialtyService{
   }
 
   async seed() {
+    
     const specialties = [
       {
         name:"Alergologia",

@@ -22,4 +22,7 @@ export class Doctor {
 
   @Column("int", { array: true})
   specialties: number[];
+
+  @Column({select: false})
+  isDeleted: boolean
 }

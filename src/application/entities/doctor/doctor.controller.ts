@@ -25,6 +25,12 @@ export class DoctorController {
     return await this.doctorService.updateData(UpdateDoctorDto, id, service);
   }
 
+  @Patch('delete/:id')
+  async deactivateDoctor(@Param('id') id: number) {
+    await this.doctorService.delete(Number(id));
+    return "Doctor deactivated from system!";
+  }
+
   @Get()
   findAllDoctors(@Query() query: {
     name:string, 

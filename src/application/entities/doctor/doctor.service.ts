@@ -25,7 +25,8 @@ export class DoctorService{
         telefoneFixo: parseInt(CreateDoctorDto.telefoneFixo),
         telefoneCelular: parseInt(CreateDoctorDto.telefoneCelular),
         cep: parseInt(CreateDoctorDto.cep),
-        specialties: CreateDoctorDto.specialties
+        specialties: CreateDoctorDto.specialties,
+        isDeleted: false
       });
 
       return doctor;
@@ -63,19 +64,19 @@ export class DoctorService{
     if(UpdateDoctorDto.specialties) {
       await service.addDoctorToSpecialties(id, UpdateDoctorDto.specialties);
     }
-    
+
     return await this.getDoctorById(id, service);
   }
 
   async getAllDoctors(service: SpecialtyService) {
-    const doctors = await this.doctorRepository.find();
+    const doctors = await this.doctorRepository.find({where:{isDeleted:false}});
     return await getSpecialtiesNames(doctors, service);
   }
 
   async getDoctorById(id: number, service:SpecialtyService) {
 
     try {
-      const doctor = await this.doctorRepository.findBy({id});
+      const doctor = await this.doctorRepository.findBy({id, isDeleted:false});
 
       return await getSpecialtiesNames(doctor, service);
 
@@ -92,28 +93,31 @@ export class DoctorService{
 
   async getDoctorByFilters(query: any, service:SpecialtyService) {
     if(query.cep) {
-      const doctors = await this.doctorRepository.findBy({cep:query.cep});
+      const doctors = await this.doctorRepository.findBy({cep:query.cep, isDeleted:false});
 
       const addSpecialtiesNames = await getSpecialtiesNames(doctors, service);
 
       return await addAddressInfo(addSpecialtiesNames);
     }
 
-    if(query.specialties) {
+    if(query.specialties && !query.isDeleted) {
       query.specialties = fixQueryArray(query.specialties);
 
       const doctors = await this.doctorRepository.createQueryBuilder('doctors')
-      .where('doctors.specialties @> :specialties', { specialties:query.specialties}).getMany();
+      .where('doctors.isDeleted = false AND doctors.specialties @> :specialties', { specialties:query.specialties}).getMany();
 
       return await getSpecialtiesNames(doctors, service);
     }
-
+    
+    query.isDeleted = false;
     const doctors = await this.doctorRepository.findBy(query);
     return await getSpecialtiesNames(doctors, service);
   }
 
-  delete() {
-    
+  async delete(id:number) {
+    const doctor = await this.doctorRepository.findOne({where:{id}});
+    doctor.isDeleted = true;
+    await this.doctorRepository.update(id,doctor);
   }
 }
 
