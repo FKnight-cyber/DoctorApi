@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { SpecialtyService } from "../specialties/specialty.service";
 import { Doctor } from "./doctor.entity";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
+import { UpdateDoctorDto } from "./dto/update-doctor.dto";
 
 @Injectable({})
 export class DoctorService{
@@ -39,8 +40,31 @@ export class DoctorService{
     }
   }
 
-  update() {
+  async updateData(UpdateDoctorDto: UpdateDoctorDto, id:number, service:SpecialtyService) {
+    const doctor = await this.doctorRepository.findOne({where:{id}});
+
+    if(UpdateDoctorDto.cep) {
+      const checkCEP = await axios.get(`http://viacep.com.br/ws/${UpdateDoctorDto.cep}/json/`);
+      
+      if(checkCEP.data.erro) {
+        throw new NotFoundException('Invalid cep!', { cause: new Error(), description: "Couldn't find your cep info" })
+      }
+    }
+
+    doctor.name = UpdateDoctorDto.name ? UpdateDoctorDto.name : doctor.name;
+    doctor.crm = UpdateDoctorDto.crm ? parseInt(UpdateDoctorDto.crm) : doctor.crm;
+    doctor.cep = UpdateDoctorDto.cep ? parseInt(UpdateDoctorDto.cep) : doctor.cep;
+    doctor.telefoneFixo = UpdateDoctorDto.telefoneFixo ? parseInt(UpdateDoctorDto.telefoneFixo) : doctor.telefoneFixo;
+    doctor.telefoneCelular = UpdateDoctorDto.telefoneCelular ? parseInt(UpdateDoctorDto.telefoneCelular) : doctor.telefoneCelular;
+    doctor.specialties = UpdateDoctorDto.specialties ? UpdateDoctorDto.specialties : doctor.specialties;
+
+    await this.doctorRepository.update(id, doctor);
+
+    if(UpdateDoctorDto.specialties) {
+      await service.addDoctorToSpecialties(id, UpdateDoctorDto.specialties);
+    }
     
+    return await this.getDoctorById(id, service);
   }
 
   async getAllDoctors(service: SpecialtyService) {

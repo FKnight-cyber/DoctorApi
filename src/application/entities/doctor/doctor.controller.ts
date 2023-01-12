@@ -2,7 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestj
 import { SpecialtyService } from "../specialties/specialty.service";
 import { DoctorService } from "./doctor.service";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
-import { CreateDoctorValidatorPipe } from "./validation.pipe";
+import { UpdateDoctorDto } from "./dto/update-doctor.dto";
+import { CreateDoctorValidatorPipe, UpdateDoctorValidatorPipe } from "./validation.pipe";
 
 @Controller('doctors')
 export class DoctorController {
@@ -18,9 +19,10 @@ export class DoctorController {
     return "Doctor sucessfully registered!"
   }
 
-  @Patch('update')
-  update(){
-    return 'update route';
+  @Patch('update/:id')
+  async updateDoctorInfo(@Body(new UpdateDoctorValidatorPipe) UpdateDoctorDto: UpdateDoctorDto, @Param('id') id: number){
+    const service = this.specialtyService;
+    return await this.doctorService.updateData(UpdateDoctorDto, id, service);
   }
 
   @Get()
