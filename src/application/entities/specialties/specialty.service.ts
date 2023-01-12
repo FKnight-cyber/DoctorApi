@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Doctor } from "../doctor/doctor.entity";
 import { Specialty } from "./specialty.entity";
 
 @Injectable({})
@@ -12,8 +11,6 @@ export class SpecialtyService{
     return this.specialtyRepository.find();
   }
   
-
-
   async getSpecialtyById(id:number) {
     return this.specialtyRepository.findOne({where:{id}});
   }

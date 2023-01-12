@@ -32,15 +32,19 @@ export class DoctorController {
     cep:number,
     specialties: number[]
   }){
-    if(query) {
-      return this.doctorService.getDoctorByFilters(query);
+    const service = this.specialtyService;
+
+    if(Object.keys(query).length !== 0) {
+      return this.doctorService.getDoctorByFilters(query, service);
     }
-    return this.doctorService.getAllDoctors();
+
+    return this.doctorService.getAllDoctors(service);
   }
 
   @Get('/:id')
   findDoctorById(@Param('id') id: number){
-    return this.doctorService.getDoctorById(id);
+    const service = this.specialtyService;
+    return this.doctorService.getDoctorById(id, service);
   }
 
   @Delete('remove')

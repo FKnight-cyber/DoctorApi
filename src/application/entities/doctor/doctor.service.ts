@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestj
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
 import { Repository } from "typeorm";
-import { Specialty } from "../specialties/specialty.entity";
+import { SpecialtyService } from "../specialties/specialty.service";
 import { Doctor } from "./doctor.entity";
 import { CreateDoctorDto } from "./dto/create-doctor.dto";
 
@@ -43,14 +43,18 @@ export class DoctorService{
     
   }
 
-  async getAllDoctors() {
-   return await this.doctorRepository.find();
+  async getAllDoctors(service: SpecialtyService) {
+    const doctors = await this.doctorRepository.find();
+    return await getSpecialtiesNames(doctors, service);
   }
 
-  async getDoctorById(id: number) {
+  async getDoctorById(id: number, service:SpecialtyService) {
 
     try {
-      return await this.doctorRepository.findBy({id});
+      const doctor = await this.doctorRepository.findBy({id});
+
+      return await getSpecialtiesNames(doctor, service);
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
@@ -62,15 +66,26 @@ export class DoctorService{
 
   }
 
-  async getDoctorByFilters(query: any) {
+  async getDoctorByFilters(query: any, service:SpecialtyService) {
     if(query.cep) {
-      const doctor = this.doctorRepository.findBy({cep:query.cep});
-    }
-    return this.doctorRepository.findBy(query);
-  }
+      const doctors = await this.doctorRepository.findBy({cep:query.cep});
 
-  async getDoctorByCrm(crm: number) {
-    return this.doctorRepository.findBy({crm});
+      const addSpecialtiesNames = await getSpecialtiesNames(doctors, service);
+
+      return await addAddressInfo(addSpecialtiesNames);
+    }
+
+    if(query.specialties) {
+      query.specialties = fixQueryArray(query.specialties);
+
+      const doctors = await this.doctorRepository.createQueryBuilder('doctors')
+      .where('doctors.specialties @> :specialties', { specialties:query.specialties}).getMany();
+
+      return await getSpecialtiesNames(doctors, service);
+    }
+
+    const doctors = await this.doctorRepository.findBy(query);
+    return await getSpecialtiesNames(doctors, service);
   }
 
   delete() {
@@ -84,4 +99,29 @@ function fixQueryArray(numbers: string) {
     arr[i] = parseInt(arr[i]);
   }
   return arr;
+}
+
+async function getSpecialtiesNames(doctors:Doctor[], service:SpecialtyService) {
+  const result = [];
+
+  for(const doctor of doctors) {
+    const specialtiesName = [];
+    for(let i = 0; i < doctor.specialties.length; i++) {
+      const specialty = (await service.getSpecialtyById(doctor.specialties[i])).name;
+      specialtiesName.push(specialty)
+    }
+    result.push({...doctor, specialties: specialtiesName});
+  }
+
+  return result;
+}
+
+async function addAddressInfo(doctors:Doctor[]) {
+  const result = [];
+  for(const doctor of doctors) {
+    const addressInfo = (await axios.get(`http://viacep.com.br/ws/${doctor.cep}/json/`)).data;
+    delete doctor["cep"];
+    result.push({...doctor, address:addressInfo});
+  }
+  return result;
 }
