@@ -4,7 +4,6 @@ import { specialtyModule } from './application/entities/specialties/specialties.
 import { DatabaseModule } from './infra/database/database.module';
 import { ConfigModule } from '@nestjs/config';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot(),

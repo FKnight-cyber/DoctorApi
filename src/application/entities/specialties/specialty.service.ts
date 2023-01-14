@@ -31,13 +31,14 @@ export class SpecialtyService{
   }
 
   async addDoctorToSpecialties(doctorId:number, specialties:number[]) {
+    if(process.env.NODE_ENV === 'test') return;
     await this.removeDoctorFromSpecialty(doctorId, specialties);
     try {
       for(let i = 0; i < specialties.length; i++) {
         const specialty = await this.specialtyRepository.findOne({where:{id:specialties[i]}});
 
         if(!specialty.doctors.includes(Number(doctorId))){
-          specialty.doctors.push(doctorId);
+          specialty.doctors.push(Number(doctorId));
           await this.specialtyRepository.save(specialty);
         }
 

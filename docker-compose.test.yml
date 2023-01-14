@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  test-db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - 5432:5432
+    volumes:
+      - docker-test-postgres:/var/lib/postgresql/data
+      
+  testapi:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+    - .env.test
+    command: npm run start:dev
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - test-db
+
+volumes:
+  docker-test-postgres:

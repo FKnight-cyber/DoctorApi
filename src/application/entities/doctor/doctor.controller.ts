@@ -15,7 +15,7 @@ export class DoctorController {
     const doctor = await this.doctorService.insert(CreateDoctorDto);
     
     await this.specialtyService.addDoctorToSpecialties(doctor.id, doctor.specialties);
-
+   
     return "Doctor sucessfully registered!"
   }
 
