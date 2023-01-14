@@ -28,7 +28,7 @@ export class DoctorService{
         specialties: CreateDoctorDto.specialties,
         isDeleted: false
       });
-
+      
       return doctor;
 
     } catch (error) {
