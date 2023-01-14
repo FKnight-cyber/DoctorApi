@@ -17,7 +17,7 @@ export class SpecialtyService{
 
   async removeDoctorFromSpecialty(doctorId:number, specialties:number[]) {
     const allSpecialties = await this.specialtyRepository.find();
-
+    
     for(const specialty of allSpecialties) {
       if(!specialties.includes(Number(specialty.id)) && specialty.doctors.includes(Number(doctorId))) {
         
@@ -36,7 +36,6 @@ export class SpecialtyService{
     try {
       for(let i = 0; i < specialties.length; i++) {
         const specialty = await this.specialtyRepository.findOne({where:{id:specialties[i]}});
-
         if(!specialty.doctors.includes(Number(doctorId))){
           specialty.doctors.push(Number(doctorId));
           await this.specialtyRepository.save(specialty);
